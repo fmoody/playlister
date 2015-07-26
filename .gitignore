@@ -1,0 +1,8 @@
+-oauth2.json
+client_secrets.json
+playlist_updates.py-oauth2.json
+playlister.py-oauth2.json
+bin/
+include/
+lib/
+local/
