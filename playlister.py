@@ -4,9 +4,9 @@ import httplib2
 import os
 import sys
 
-# TO REMOVE LATER
+#TODO: REMOVE
 import pprint
-# TO REMOVE LATER
+#TODO: REMOVE
 
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -67,48 +67,66 @@ def main():
     youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
     http=credentials.authorize(httplib2.Http()))
 
-    playlist_ids = get_playlist_ids(youtube)
+    #print_playlist_info(youtube)
+    #pp.pprint(get_playlist_contents(youtube,get_watchlater_playlist_id(youtube)))
+    #add_playlist(youtube, "New Playlist Attempt", "Working the API all the live long day.", "private")
+    #delete_playlist(youtube, "PLR21k8SuCtZc6BsgvCSTXjMGn6QpHBkbS")
+
+
+def delete_playlist(youtube, id):
+    """ Delete a playlist by id """
+    pp.pprint(youtube.playlists().delete(id=id).execute())
+    return
+
+def add_playlist(youtube, title, description, privacy_status):
+    """ Add a playlist """
+    youtube.playlists().insert(part = "snippet,status",body = dict(snippet = dict(title = title, description = description), status = dict(privacyStatus=privacy_status))).execute()
+    return
+    
+def print_playlist_info(youtube):
+    """ Print a "pretty" dump of a users playlists and their contents. """
+    
+    playlists = get_playlists(youtube)
     
     print("Play list ids:\n")
-    pp.pprint(playlist_ids)
+    for playlist in playlists:
+        print "Title: ", playlist['title']
+        #pp.pprint(playlists)
     print("\n\n")
 
     print("Playlist contents:\n")
-    for playlist in playlist_ids:
+    for playlist in playlists:
         print "Play list title: ", playlist['title'], " (", playlist['id'], ")"
         playlist_contents = get_playlist_contents(youtube, playlist['id'])
         #pp.pprint(playlist_contents)
         print "Count is ", len(playlist_contents)
         for item in playlist_contents:
-            print "\tVideo title: ", item['title'].encode('ascii', 'ignore'), " (", item['id'], ")"
+            print "\tVideo title: ", item['snippet']['title'].encode('ascii', 'ignore'), " (", item['id'], ")"
             #print "\tVideo title: (", item['id'], ")"
         print "\n"
 
-    playlist_contents = get_playlist_contents(youtube, 'PLR21k8SuCtZdOJbTyeQ3vXy-y8Ipi3q_E')
+    #playlist_contents = get_playlist_contents(youtube, 'PLR21k8SuCtZdOJbTyeQ3vXy-y8Ipi3q_E')
     #pp.pprint(dir(youtube))
+    return
 
+def get_playlist_contents(youtube, desired_playlist_id):
+    """ Given an authenticated youtube object and a playlist id, retrieve playlist contents as a list of [id, title, and videoId]. """
 
-def get_playlist_contents(youtube, id):
-
+    fields_list = "items(id,snippet(title,resourceId(videoId)))"
     playlist_contents = []
-    playlist_items = youtube.playlistItems().list(part='snippet', playlistId=id, maxResults=50).execute()
-    playlist_contents += [{'title' : item['snippet']['title'], 'id' : item['id']} for item in playlist_items['items']]
-    #print "*** playlist_items ***"
-    #pp.pprint(playlist_items)
+    playlist_items = youtube.playlistItems().list(playlistId=desired_playlist_id, part='snippet', fields=fields_list, maxResults=50).execute()
+    playlist_contents += [item for item in playlist_items['items']]
     
     while ('nextPageToken' in playlist_items):
         print "Page Token: ", playlist_items['nextPageToken']
-        playlist_items = youtube.playlistItems().list(part='snippet', playlistId=id, maxResults=50, pageToken=playlist_items['nextPageToken']).execute()
-        #pp.pprint(playlist_items)
-        playlist_contents += [{'title' : item['snippet']['title'], 'id' : item['id']} for item in playlist_items['items']]
+        playlist_items = youtube.playlistItems().list(playlistId=id, part='snippet', fields=fields_list, maxResults=50, pageToken=playlist_items['nextPageToken']).execute()
+        playlist_contents += [item for item in playlist_items['items']]
 
-    #pp.pprint(playlist_contents)
-    #print "***  ***"
     return playlist_contents
 
-def get_playlist_ids(youtube):
-
-    # This code will return a list of playlist ids and titles for a user
+def get_playlists(youtube):
+    """ Given an authenticated youtube object, return a list of playlist ids and titles (including the 'watch later' playlist) """
+    
     playlists_request = youtube.playlists().list(part='id,snippet',mine=True).execute()
 
     playlists = [{'id' : playlist['id'], 'title' : playlist['snippet']['title']} for playlist in playlists_request['items']]
@@ -117,12 +135,10 @@ def get_playlist_ids(youtube):
     channels_listing = youtube.channels().list(part="contentDetails", mine=True).execute()
     playlists.append({'id':get_watchlater_playlist_id(youtube), 'title': u'Watch Later'})
 
-    #playlists.append(watchLater_list)
-    
     return playlists
 
 def get_watchlater_playlist_id(youtube):
-    # Get watch later playlist via looking up the user's channel
+    """ Given an authenticate youtube object, retrieve the watch later playlist id from the user's channel info. """
     channels_listing = youtube.channels().list(part="contentDetails", mine=True).execute()
     return channels_listing['items'][0]['contentDetails']['relatedPlaylists']['watchLater']
 
