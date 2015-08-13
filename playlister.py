@@ -68,11 +68,33 @@ def main():
     #http=credentials.authorize(httplib2.Http()))
     http=credentials.authorize(httplib2.Http(cache=".playlister-cache"))) # trialling caching
 
+    ## Work Area ##
+    #request_response = add_playlist(youtube, "New Playlist Attempt", "Working the API all the live long day.", "private")
+    #pp.pprint("Add Playlist response is:\n")
+    #pp.pprint(request_response)
+    #request_response = get_playlist_id_by_name(youtube, "New Playlist Attempt")
+    #pp.pprint("Get Playlist Id by Name response is:\n")
+    #pp.pprint(request_response)
+    #delete_playlist_by_name(youtube, "New Playlist Attempt")
     #print_playlist_info(youtube)
     #pp.pprint(get_playlist_contents(youtube,get_watchlater_playlist_id(youtube)))
-    #add_playlist(youtube, "New Playlist Attempt", "Working the API all the live long day.", "private")
     #delete_playlist_by_id(youtube, "PLR21k8SuCtZcvTRh5jhkLMqFI6b_vuoF-")
+    ## Work Area ##
 
+def delete_playlist_by_name(youtube, name):
+    """ Delete all playlists with the given name. """
+    named_playlists = get_playlist_id_by_name(youtube, name)
+    for playlist in named_playlists:
+        delete_playlist_by_id(youtube, playlist['id'])
+    return
+            
+def get_playlist_id_by_name(youtube, name):
+    """ Retrieve a list of playlist ids that match the given name. """
+    playlists = get_playlists(youtube)
+    named_playlists = filter(lambda playlist: playlist['title'] == name, playlists)
+    #pp.pprint(named_playlists)
+    return named_playlists
+        
 def delete_playlist_by_id(youtube, id):
     """ Delete a playlist by id """
     request_response = youtube.playlists().delete(id=id).execute()
