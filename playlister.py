@@ -65,7 +65,8 @@ def main():
         credentials = run_flow(flow, storage, flags)
     
     youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
-    http=credentials.authorize(httplib2.Http()))
+    #http=credentials.authorize(httplib2.Http()))
+    http=credentials.authorize(httplib2.Http(cache=".playlister-cache"))) # trialling caching
 
     #print_playlist_info(youtube)
     #pp.pprint(get_playlist_contents(youtube,get_watchlater_playlist_id(youtube)))
