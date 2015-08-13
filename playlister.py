@@ -70,18 +70,19 @@ def main():
     #print_playlist_info(youtube)
     #pp.pprint(get_playlist_contents(youtube,get_watchlater_playlist_id(youtube)))
     #add_playlist(youtube, "New Playlist Attempt", "Working the API all the live long day.", "private")
-    #delete_playlist(youtube, "PLR21k8SuCtZc6BsgvCSTXjMGn6QpHBkbS")
+    #delete_playlist_by_id(youtube, "PLR21k8SuCtZcvTRh5jhkLMqFI6b_vuoF-")
 
-
-def delete_playlist(youtube, id):
+def delete_playlist_by_id(youtube, id):
     """ Delete a playlist by id """
-    pp.pprint(youtube.playlists().delete(id=id).execute())
-    return
+    request_response = youtube.playlists().delete(id=id).execute()
+    #pp.pprint(request_response)
+    return request_response
 
 def add_playlist(youtube, title, description, privacy_status):
     """ Add a playlist """
-    youtube.playlists().insert(part = "snippet,status",body = dict(snippet = dict(title = title, description = description), status = dict(privacyStatus=privacy_status))).execute()
-    return
+    request_response = youtube.playlists().insert(part = "snippet,status",body = dict(snippet = dict(title = title, description = description), status = dict(privacyStatus=privacy_status))).execute()
+    #pp.pprint(request_response)
+    return request_response
     
 def print_playlist_info(youtube):
     """ Print a "pretty" dump of a users playlists and their contents. """
