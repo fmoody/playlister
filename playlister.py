@@ -1,30 +1,40 @@
 #!./bin/python
 
-#TODO: REMOVE
+import argparse
 import pprint
-#TODO: REMOVE
 
 from google_auth_code import *
 from tooling import *
 
-
 def main():
 
-    youtube = get_youtube_connection()
-    
-    ## Work Area ##
-    print_playlist_info(youtube)
-    #request_response = add_playlist(youtube, "Test Playlist", "Working the API all the live long day.", "private")
-    #pp.pprint("Add Playlist response is:\n")
-    #pp.pprint(request_response)
-    #request_response = get_playlist_id_by_title(youtube, "Watch Later")
-    #pp.pprint("Get Playlist Id by Name response is:\n")
-    #pp.pprint(request_response)
-    #delete_playlist_by_title(youtube, "Test Playlist")
-    #pp.pprint(get_playlist_contents(youtube,get_watchlater_playlist_id(youtube)))
-    #delete_playlist_by_id(youtube, "PLR21k8SuCtZcvTRh5jhkLMqFI6b_vuoF-")
-    ## Work Area ##
+    opt_parser = argparse.ArgumentParser(description="manipulate your youtube playlists")
+    opt_parser.add_argument("--playlist", help="The name of the playlist", required=True)
 
+    action_group = opt_parser.add_mutually_exclusive_group(required=True)
+    action_group.add_argument("--list", help="List a playlist", action="store_true")
+    action_group.add_argument("--add", help="Add a playlist", action="store_true")
+    action_group.add_argument("--rm", help="Remove a playlist", action="store_true")
+    action_group.add_argument("--cp", help="Copy PLAYLIST to CP", default=False)
+
+    opt_parser.add_argument("--description", help="Description of the playlist")
+    opt_parser.add_argument("--privacy_status", help="Privacy Status",
+                            choices = ['public', 'private', 'unlisted'], default='private')
+    
+    args = opt_parser.parse_args()
+
+    youtube = get_youtube_connection()
+
+    if args.list:
+        playlist_ids = get_playlist_id_by_title(youtube, args.playlist)
+        for playlist_id in playlist_ids:
+            pp.pprint(get_playlist_contents(youtube,playlist_id['id']))
+    elif args.add:
+        add_playlist(youtube, args.playlist, args.description, args.privacy_status)
+    elif args.rm:
+        delete_playlist_by_title(youtube, args.playlist)
+    elif args.cp:
+        print("placeholder")
 
 def print_playlist_info(youtube):
     """ Print a "pretty" dump of a users playlists and their contents. """
