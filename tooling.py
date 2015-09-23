@@ -7,7 +7,6 @@ def delete_playlist_by_title(youtube, title):
     named_playlists = get_playlist_id_by_title(youtube, title)
     for playlist in named_playlists:
         request_response = delete_playlist_by_id(youtube, playlist['id'])
-        pp.pprint(request_response)
     return
             
 def get_playlist_id_by_title(youtube, title):
