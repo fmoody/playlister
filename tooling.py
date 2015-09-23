@@ -14,32 +14,28 @@ def get_playlist_id_by_title(youtube, title):
     """ Retrieve a list of playlists (ids and titles) that match the given title. """
     playlists = get_playlists(youtube)
     named_playlists = filter(lambda playlist: playlist['title'] == title, playlists)
-    #pp.pprint(named_playlists)
     return named_playlists
         
 def delete_playlist_by_id(youtube, id):
     """ Delete a playlist by id """
     request_response = youtube.playlists().delete(id=id).execute()
-    #pp.pprint(request_response)
     return request_response
 
 def add_playlist(youtube, title, description, privacy_status):
     """ Add a playlist """
     request_response = youtube.playlists().insert(part = "snippet,status",body = dict(snippet = dict(title = title, description = description), status = dict(privacyStatus=privacy_status))).execute()
-    #pp.pprint(request_response)
     return request_response
     
 def get_playlist_contents(youtube, desired_playlist_id):
     """ Given an authenticated youtube object and a playlist id, retrieve playlist contents as a list of [id, title, and videoId]. """
 
-    fields_list = "items(id,snippet(title,resourceId(videoId)))"
+    fields_list = "items(id,snippet(title,resourceId(videoId))),nextPageToken"
     playlist_contents = []
     playlist_items = youtube.playlistItems().list(playlistId=desired_playlist_id, part='snippet', fields=fields_list, maxResults=50).execute()
     playlist_contents += [item for item in playlist_items['items']]
     
     while ('nextPageToken' in playlist_items):
-        print "Page Token: ", playlist_items['nextPageToken']
-        playlist_items = youtube.playlistItems().list(playlistId=id, part='snippet', fields=fields_list, maxResults=50, pageToken=playlist_items['nextPageToken']).execute()
+        playlist_items = youtube.playlistItems().list(playlistId=desired_playlist_id, part='snippet', fields=fields_list, maxResults=50, pageToken=playlist_items['nextPageToken']).execute()
         playlist_contents += [item for item in playlist_items['items']]
 
     return playlist_contents
