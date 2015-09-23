@@ -6,6 +6,7 @@ import pprint
 from google_auth_code import *
 from tooling import *
 
+
 def main():
 
     opt_parser = argparse.ArgumentParser(description="manipulate your youtube playlists")
@@ -19,8 +20,8 @@ def main():
 
     opt_parser.add_argument("--description", help="Description of the playlist")
     opt_parser.add_argument("--privacy_status", help="Privacy Status",
-                            choices = ['public', 'private', 'unlisted'], default='private')
-    
+                            choices=['public', 'private', 'unlisted'], default='private')
+
     args = opt_parser.parse_args()
 
     youtube = get_youtube_connection()
@@ -28,7 +29,7 @@ def main():
     if args.list:
         playlist_ids = get_playlist_id_by_title(youtube, args.playlist)
         for playlist_id in playlist_ids:
-            pp.pprint(get_playlist_contents(youtube,playlist_id['id']))
+            pp.pprint(get_playlist_contents(youtube, playlist_id['id']))
     elif args.add:
         add_playlist(youtube, args.playlist, args.description, args.privacy_status)
     elif args.rm:
@@ -36,33 +37,29 @@ def main():
     elif args.cp:
         print("placeholder")
 
+
 def print_playlist_info(youtube):
     """ Print a "pretty" dump of a users playlists and their contents. """
-    
+
     playlists = get_playlists(youtube)
-    
+
     print("Play list ids:\n")
     for playlist in playlists:
         print "Title: ", playlist['title']
-        #pp.pprint(playlists)
     print("\n\n")
 
     print("Playlist contents:\n")
     for playlist in playlists:
         print "Play list title: ", playlist['title'], " (", playlist['id'], ")"
         playlist_contents = get_playlist_contents(youtube, playlist['id'])
-        #pp.pprint(playlist_contents)
         print "Count is ", len(playlist_contents)
         for item in playlist_contents:
-            print "\tVideo title: ", item['snippet']['title'].encode('ascii', 'ignore'), " (", item['id'], ")"
-            #print "\tVideo title: (", item['id'], ")"
+            print "\tVideo title: ", item['snippet']['title'].encode('ascii', 'ignore'),
+            " (", item['id'], ")"
         print "\n"
 
-    #playlist_contents = get_playlist_contents(youtube, 'PLR21k8SuCtZdOJbTyeQ3vXy-y8Ipi3q_E')
-    #pp.pprint(dir(youtube))
     return
 
 if __name__ == '__main__':
     pp = pprint.PrettyPrinter()
     main()
-    
