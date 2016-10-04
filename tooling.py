@@ -61,16 +61,20 @@ def get_playlists(youtube):
     """ Given an authenticated youtube object, return a list of playlist ids and titles
     (including the 'watch later' playlist) """
 
-    playlists_request = youtube.playlists().list(part='id,snippet', mine=True).execute()
+    playlists = []
+    
+    playlists_request = youtube.playlists().list(part='id,snippet', mine=True)
 
-    playlists = [{'id': playlist['id'], 'title': playlist['snippet']['title']}
-                 for playlist in playlists_request['items']]
+    while(playlists_request is not None):
+        response = playlists_request.execute()
+        playlists += [{'id': playlist['id'], 'title': playlist['snippet']['title']}
+                      for playlist in response['items']]
+        playlists_request = youtube.playlists().list_next(playlists_request, response)
 
     # Add the 'Watch Later' playlist to the normal set of playlists
     playlists.append({'id': get_watchlater_playlist_id(youtube), 'title': u'Watch Later'})
 
     return playlists
-
 
 def get_watchlater_playlist_id(youtube):
     """ Given an authenticate youtube object, retrieve the watch later playlist id
