@@ -48,7 +48,7 @@ YOUTUBE_READ_WRITE_SCOPE = "https://www.googleapis.com/auth/youtube"
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
 
-def get_youtube_connection():
+def get_youtube_connection(args):
     flow = flow_from_clientsecrets(CLIENT_SECRETS_FILE,
         message=MISSING_CLIENT_SECRETS_MESSAGE,
         scope=YOUTUBE_READ_WRITE_SCOPE)
@@ -57,8 +57,7 @@ def get_youtube_connection():
     credentials = storage.get()
     
     if credentials is None or credentials.invalid:
-        flags = argparser.parse_args()
-        credentials = run_flow(flow, storage, flags)
+        credentials = run_flow(flow, storage, args)
         
     youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
     #http=credentials.authorize(httplib2.Http()))

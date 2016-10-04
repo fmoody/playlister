@@ -1,7 +1,8 @@
-#!./bin/python
+#!/usr/bin/env python
 
 import argparse
 import pprint
+import oauth2client.tools
 
 from google_auth_code import *
 from tooling import *
@@ -9,7 +10,7 @@ from tooling import *
 
 def main():
 
-    opt_parser = argparse.ArgumentParser(description="manipulate your youtube playlists")
+    opt_parser = argparse.ArgumentParser(description="manipulate your youtube playlists", parents=[oauth2client.tools.argparser])
     opt_parser.add_argument("--playlist", help="The name of the playlist", required=True)
 
     action_group = opt_parser.add_mutually_exclusive_group(required=True)
@@ -24,7 +25,7 @@ def main():
 
     args = opt_parser.parse_args()
 
-    youtube = get_youtube_connection()
+    youtube = get_youtube_connection(args)
 
     if args.list:
         playlist_ids = get_playlist_id_by_title(youtube, args.playlist)
