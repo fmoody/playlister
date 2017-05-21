@@ -7,6 +7,7 @@ Problem: Youtube Watch Later playlist has grown out of control and general annoy
 
 Solution: Command line munging of youtube playlists!  Unfortunately, before playlister was done, Youtube removed the ability to access the Watch Later playlist...  But it is still handy to be able to muck about with playlists and their videos.
 
+```
 usage: playlister.py [-h] [--auth_host_name AUTH_HOST_NAME]
                      [--noauth_local_webserver]
                      [--auth_host_port [AUTH_HOST_PORT [AUTH_HOST_PORT ...]]]
@@ -36,6 +37,4 @@ Playlister:
     list                List videos in a playlist
     add                 Add a video to a playlist
     rm                  Remove a video to a playlist
-
-
-
+```
