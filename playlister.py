@@ -32,7 +32,7 @@ def main():
         playlist_id = get_playlist_id_by_title(youtube, args.playlist)[0]['id']
         remove_video_from_playlist(youtube, playlist_id, args.videoId)
     else:
-        print "Error, no command executed."
+        print("Error, no command executed.")
 
 
 def construct_arg_parser():

@@ -16,7 +16,7 @@ def display_playlist_list(youtube, detail, match):
                 else:
                     detail_output = playlist[detail_item]
 
-                print detail_output,
+                print(detail_output,)
             print
     return
 
@@ -167,17 +167,17 @@ def print_playlist_info(youtube):
 
     print("Play list ids:\n")
     for playlist in playlists:
-        print "Title: ", playlist['title']
+        print("Title: ", playlist['title'])
     print("\n\n")
 
     print("Playlist contents:\n")
     for playlist in playlists:
-        print "Play list title: ", playlist['title'], " (", playlist['id'], ")"
+        print("Play list title: ", playlist['title'], " (", playlist['id'], ")")
         playlist_contents = get_playlist_contents(youtube, playlist['id'])
-        print "Count is ", len(playlist_contents)
+        print("Count is ", len(playlist_contents))
         for item in playlist_contents:
-            print "\tVideo title: ", item['snippet']['title'].encode('ascii', 'ignore'),
-            " (", item['id'], ")"
-        print "\n"
+            print("\tVideo title: ", item['snippet']['title'].encode('ascii', 'ignore'),
+                  " (", item['id'], ")")
+        print("\n")
 
     return
